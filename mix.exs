@@ -23,9 +23,8 @@ defmodule AzureMetricsExporterProxy.MixProject do
   defp deps do
     [
       {:plug_cowboy, "~> 2.6"},
-      {:reverse_proxy_plug, "~> 2.1"},
-      {:tesla, "~> 1.5"},
-      {:hackney, "~> 1.18"}
+      {:reverse_proxy_plug, path: "../reverse_proxy_plug"},
+      {:tesla, "~> 1.4"}
     ]
   end
 end

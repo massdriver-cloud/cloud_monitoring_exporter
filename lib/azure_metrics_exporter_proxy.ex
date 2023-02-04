@@ -1,18 +1,11 @@
 defmodule AzureMetricsExporterProxy do
-  @moduledoc """
-  Documentation for `AzureMetricsExporterProxy`.
-  """
+  @moduledoc false
 
   @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> AzureMetricsExporterProxy.hello()
-      :world
-
+  Fetches the subscription ID from the application environment.
   """
-  def hello do
-    :world
+  @spec subscription_id :: String.t()
+  def subscription_id do
+    Application.fetch_env!(:azure_metrics_exporter_proxy, :subscription_id)
   end
 end

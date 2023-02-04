@@ -1,10 +1,16 @@
 defmodule AzureMetricsExporterProxy.Router do
   use Plug.Router
 
-    plug :match
-    plug :dispatch
+  alias AzureMetricsExporterProxy.SubscriptionPlug
 
-    get("/metrics") do
-      send_resp(conn, 200, "Hello world")
-    end
+  plug(:match)
+  plug(:dispatch)
+  plug(SubscriptionPlug, subscription_id_mfa: {AzureMetricsExporterProxy, :subscription_id, []})
+
+  forward("/",
+    to: ReverseProxyPlug,
+    upstream: "http://example.com",
+    client_options: [tesla_client: Tesla.client([])],
+    response_mode: :buffer
+  )
 end
