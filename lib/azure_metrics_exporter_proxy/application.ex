@@ -5,11 +5,12 @@ defmodule AzureMetricsExporterProxy.Application do
 
   use Application
 
+  alias AzureMetricsExporterProxy.Router
+
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: AzureMetricsExporterProxy.Worker.start_link(arg)
-      # {AzureMetricsExporterProxy.Worker, arg}
+      {Plug.Cowboy, scheme: :http, plug: Router, options: [port: 9090]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
