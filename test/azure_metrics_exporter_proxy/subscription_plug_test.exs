@@ -3,6 +3,8 @@ defmodule AzureMetricsExporterProxy.SubscriptionPlugTest do
   doctest AzureMetricsExporterProxy.SubscriptionPlug
   use Plug.Test
 
+  alias Plug.Conn.Query
+
   @path "/metrics"
   @params %{
     "name" => "microsoft_cache_redis",
@@ -20,7 +22,7 @@ defmodule AzureMetricsExporterProxy.SubscriptionPlugTest do
     opts = AzureMetricsExporterProxy.SubscriptionPlug.init(subscription_id: subscription_id)
     conn = conn(:get, @path, @params) |> AzureMetricsExporterProxy.SubscriptionPlug.call(opts)
 
-    assert conn.query_string |> Plug.Conn.Query.decode() ==
+    assert conn.query_string |> Query.decode() ==
              Map.put(@params, "subscription_id", subscription_id)
   end
 end
