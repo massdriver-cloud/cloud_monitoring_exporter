@@ -16,7 +16,7 @@ repos:
         name: "mix format"
         entry: mix format --check-formatted
         language: system
-        files: \.exs*$
+        files: \.ex*$
       - id: compile
         name: "mix compile"
         entry: mix compile --force --warnings-as-errors
