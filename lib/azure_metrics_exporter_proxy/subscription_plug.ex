@@ -20,8 +20,7 @@ defmodule AzureMetricsExporterProxy.SubscriptionPlug do
 
   @spec call(Conn.t(), subscription_id()) :: Conn.t()
   def call(conn, subscription_id) do
-    subscription_query =
-      Plug.Conn.Query.encode(%{subscription_id: subscription_id})
+    subscription_query = Plug.Conn.Query.encode(%{subscription_id: subscription_id})
 
     query_string = ~s(#{conn.query_string}&#{subscription_query})
     %{conn | query_string: query_string}
