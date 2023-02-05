@@ -1,0 +1,15 @@
+# Dependabot docs:
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "mix"
+    directory: "/"
+    # Checks every Monday morning at 5am Pacific.
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+      timezone: "America/Los_Angeles"
+    # Will only open a max of 3 PRs.
+    open-pull-requests-limit: 3
