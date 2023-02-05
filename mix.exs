@@ -26,7 +26,8 @@ defmodule AzureMetricsExporterProxy.MixProject do
       {:reverse_proxy_plug, "~> 2.1"},
       {:tesla, "~> 1.4"},
       {:hackney, "~> 1.17"},
-      {:uuid, "~> 1.1", only: :test}
+      {:uuid, "~> 1.1", only: :test},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
     ]
   end
 end
