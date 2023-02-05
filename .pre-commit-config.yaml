@@ -28,4 +28,4 @@ repos:
         entry: mix credo
         language: system
         pass_filenames: false
-        files: \.exs*$
+        files: \.ex*$
