@@ -10,16 +10,20 @@ defmodule AzureMetricsExporterProxy.SubscriptionPlug do
 
   @spec init(Keyword.t()) :: subscription_id()
   def init(opts) do
-    {module, function, args} =
-      opts
-      |> Keyword.fetch!(:subscription_id_mfa)
-
-    :erlang.apply(module, function, args)
+    opts
+    |> Keyword.fetch!(:subscription_id)
+    |> case do
+      {module, function, args} -> :erlang.apply(module, function, args)
+      subscription_id when is_binary(subscription_id) -> subscription_id
+    end
   end
 
   @spec call(Conn.t(), subscription_id()) :: Conn.t()
   def call(conn, subscription_id) do
-    query_string = conn.query_string <> "&subscription_id=#{subscription_id}"
+    subscription_query =
+      Plug.Conn.Query.encode(%{subscription_id: subscription_id})
+
+    query_string = ~s(#{conn.query_string}&#{subscription_query})
     %{conn | query_string: query_string}
   end
 end

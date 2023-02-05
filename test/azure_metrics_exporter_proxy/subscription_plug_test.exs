@@ -1,9 +1,7 @@
-defmodule AzureMetricsExporterProxyTest do
+defmodule AzureMetricsExporterProxy.SubscriptionPlugTest do
   use ExUnit.Case
-  doctest AzureMetricsExporterProxy
+  doctest AzureMetricsExporterProxy.SubscriptionPlug
   use Plug.Test
-
-  import Tesla.Mock
 
   @path "/metrics"
   @params %{
@@ -17,24 +15,10 @@ defmodule AzureMetricsExporterProxyTest do
     "aggregation" => ["Average, Total"]
   }
 
-  setup do
-    mock(fn
-      %{method: :get, url: "http://example.com:80#{@path}" <> _rest} ->
-        %Tesla.Env{status: 200, body: "i_am_many_prometheus_metrics{label=\"value\"}"}
-    end)
-
-    :ok
-  end
-
-  test "forwards to the proxy url" do
-    conn = conn(:get, @path) |> AzureMetricsExporterProxy.Router.call([])
-    assert conn.status == 200
-  end
-
   test "Attaches subscription ID to query string" do
-    subscription_id = "1234"
-    conn = conn(:get, @path, @params) |> AzureMetricsExporterProxy.Router.call([])
-    assert conn.status == 200
+    subscription_id = UUID.uuid4()
+    opts = AzureMetricsExporterProxy.SubscriptionPlug.init(subscription_id: subscription_id)
+    conn = conn(:get, @path, @params) |> AzureMetricsExporterProxy.SubscriptionPlug.call(opts)
 
     assert conn.query_string |> Plug.Conn.Query.decode() ==
              Map.put(@params, "subscription_id", subscription_id)

@@ -5,7 +5,7 @@ defmodule AzureMetricsExporterProxy.Router do
 
   plug(:match)
   plug(:dispatch)
-  plug(SubscriptionPlug, subscription_id_mfa: {AzureMetricsExporterProxy, :subscription_id, []})
+  plug(SubscriptionPlug, subscription_id: {AzureMetricsExporterProxy, :subscription_id, []})
 
   forward("/",
     to: ReverseProxyPlug,
