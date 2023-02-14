@@ -24,3 +24,9 @@ azure_metrics_exporter_proxy-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+.elixir_ls
+.iex.exs
+_build
+
+credentials.json
