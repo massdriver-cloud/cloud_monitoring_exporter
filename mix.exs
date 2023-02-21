@@ -22,7 +22,11 @@ defmodule Miser.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:goth, "~> 1.3"}
+      {:goth, "~> 1.3"},
+      {:google_api_monitoring, git: "git@github.com:akasprzok/google_api_monitoring_v3.git", branch: "main"},
+      {:typed_struct, "~> 0.3"},
+      {:prom_ex, "~> 1.7"},
+      {:plug_cowboy, "~> 2.5"}
     ]
   end
 end

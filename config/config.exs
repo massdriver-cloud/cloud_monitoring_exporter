@@ -1,3 +1,3 @@
 import Config
 
-config :goth, json: File.read!("credentials.json")
+config :miser, credentials_json: File.read!("credentials.json")
