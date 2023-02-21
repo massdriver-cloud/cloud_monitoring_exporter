@@ -8,8 +8,9 @@ defmodule Miser.Client do
   @aggregation_crossSeriesReducer "REDUCE_NONE"
   @aggregation_alignmentPeriod "60s"
 
-  @spec time_series(Request.t()) :: {:ok, Model.ListTimeSeriesResponse.t()} | {:error, String.t()}
-  def time_series(request) do
+  @spec time_series_list(Request.t()) ::
+          {:ok, Model.ListTimeSeriesResponse.t()} | {:error, String.t()}
+  def time_series_list(request) do
     end_time = DateTime.utc_now()
     start_time = end_time |> DateTime.add(request.interval_seconds * -1, :second)
 
@@ -23,9 +24,10 @@ defmodule Miser.Client do
         ~s|metadata.user_labels."#{key}"="#{value}"|
       end)
 
-    filters = [
-      ~s|metric.type="#{request.metric_type}"|,
-    ] ++ user_labels
+    filters =
+      [
+        ~s|metric.type="#{request.metric_type}"|
+      ] ++ user_labels
 
     opts = [
       {:filter, filters |> Enum.join(" ")},
@@ -38,6 +40,29 @@ defmodule Miser.Client do
 
     Api.Projects.monitoring_projects_time_series_list(conn, request.project_id, opts)
     |> parse_response()
+  end
+
+  def metric_descriptors_list(request) do
+    {:ok, token} = Goth.fetch(Miser.Goth)
+
+    conn = Connection.new(token.token)
+
+    user_labels =
+      request.user_labels
+      |> Enum.map(fn {key, value} ->
+        ~s|metadata.user_labels."#{key}"="#{value}"|
+      end)
+
+    filters =
+      [
+        ~s|metric.type="#{request.metric_type}"|
+      ] ++ user_labels
+
+    opts = [
+      {:filter, filters |> Enum.join(" ")}
+    ]
+
+    Api.Projects.monitoring_projects_metric_descriptors_list(conn, request.project_id, opts)
   end
 
   defp parse_response({:ok, %Model.ListTimeSeriesResponse{} = response}), do: {:ok, response}

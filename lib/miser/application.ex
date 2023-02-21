@@ -5,12 +5,15 @@ defmodule Miser.Application do
 
   @impl true
   def start(_type, _args) do
-    credentials = Application.get_env(:miser, :credentials_json)
+    credentials =
+      Application.get_env(:miser, :credentials_json)
       |> Jason.decode!()
 
     source = {:service_account, credentials}
 
     children = [
+      Miser.ApplicationMetrics,
+      Miser.Metrics,
       {Goth, name: Miser.Goth, source: source}
     ]
 
