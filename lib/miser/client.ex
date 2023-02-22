@@ -2,21 +2,25 @@ defmodule Miser.Client do
   @moduledoc "Client for interacting with the Monitoring API."
 
   alias GoogleApi.Monitoring.V3.{Api, Connection, Model}
-  alias Miser.Client.Request
+  alias Miser.Client.ListMetricDescriptorsRequest
 
   @aggregation_perSeriesAligner "ALIGN_MEAN"
   @aggregation_crossSeriesReducer "REDUCE_NONE"
   @aggregation_alignmentPeriod "60s"
 
-  @spec time_series_list(Request.t()) ::
+  def conn() do
+    token_fetcher = fn _scopes ->
+      {:ok, token} = Goth.fetch(Miser.Goth)
+      token.token
+    end
+    Connection.new(token_fetcher)
+  end
+
+  @spec time_series_list(map) ::
           {:ok, Model.ListTimeSeriesResponse.t()} | {:error, String.t()}
   def time_series_list(request) do
     end_time = DateTime.utc_now()
     start_time = end_time |> DateTime.add(request.interval_seconds * -1, :second)
-
-    {:ok, token} = Goth.fetch(Miser.Goth)
-
-    conn = Connection.new(token.token)
 
     user_labels =
       request.user_labels
@@ -38,15 +42,12 @@ defmodule Miser.Client do
       {:"interval.startTime", start_time |> DateTime.to_iso8601()}
     ]
 
-    Api.Projects.monitoring_projects_time_series_list(conn, request.project_id, opts)
+    conn()
+    |> Api.Projects.monitoring_projects_time_series_list(request.project_id, opts)
     |> parse_response()
   end
 
-  def metric_descriptors_list(request) do
-    {:ok, token} = Goth.fetch(Miser.Goth)
-
-    conn = Connection.new(token.token)
-
+  def list_metric_descriptors(%ListMetricDescriptorsRequest{} = request) do
     user_labels =
       request.user_labels
       |> Enum.map(fn {key, value} ->
@@ -55,21 +56,23 @@ defmodule Miser.Client do
 
     filters =
       [
-        ~s|metric.type="#{request.metric_type}"|
+        ~s|metric.type=starts_with("#{request.metric_type_prefix}")|
       ] ++ user_labels
 
     opts = [
       {:filter, filters |> Enum.join(" ")}
     ]
 
-    Api.Projects.monitoring_projects_metric_descriptors_list(conn, request.project_id, opts)
+    conn()
+    |> Api.Projects.monitoring_projects_metric_descriptors_list(request.project_id, opts)
+    |> parse_response()
   end
-
-  defp parse_response({:ok, %Model.ListTimeSeriesResponse{} = response}), do: {:ok, response}
 
   defp parse_response({:ok, %Tesla.Env{status: status, body: body}}) do
     {:error, "Unexpected status #{status} with body: #{inspect(body)}"}
   end
 
   defp parse_response({:error, error}), do: {:error, error}
+
+  defp parse_response({:ok, response}), do: {:ok, response}
 end
