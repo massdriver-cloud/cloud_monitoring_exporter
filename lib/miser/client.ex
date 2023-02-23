@@ -2,7 +2,7 @@ defmodule Miser.Client do
   @moduledoc "Client for interacting with the Monitoring API."
 
   alias GoogleApi.Monitoring.V3.{Api, Connection, Model}
-  alias Miser.Client.ListMetricDescriptorsRequest
+  alias Miser.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
 
   @aggregation_perSeriesAligner "ALIGN_MEAN"
   @aggregation_crossSeriesReducer "REDUCE_NONE"
@@ -13,12 +13,13 @@ defmodule Miser.Client do
       {:ok, token} = Goth.fetch(Miser.Goth)
       token.token
     end
+
     Connection.new(token_fetcher)
   end
 
-  @spec time_series_list(map) ::
+  @spec list_time_series(ListTimeSeriesRequest.t()) ::
           {:ok, Model.ListTimeSeriesResponse.t()} | {:error, String.t()}
-  def time_series_list(request) do
+  def list_time_series(request) do
     end_time = DateTime.utc_now()
     start_time = end_time |> DateTime.add(request.interval_seconds * -1, :second)
 

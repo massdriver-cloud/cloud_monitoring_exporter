@@ -1,3 +1,3 @@
-defmodule Miser do
+defmodule Miser.Exporter do
   use Prometheus.PlugExporter
 end

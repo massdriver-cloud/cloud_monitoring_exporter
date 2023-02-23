@@ -5,6 +5,9 @@ defmodule Miser.Application do
 
   @impl true
   def start(_type, _args) do
+    Prometheus.Registry.register_collector(Miser.Collector)
+    Miser.setup()
+
     credentials =
       Application.get_env(:miser, :credentials_json)
       |> Jason.decode!()
@@ -12,8 +15,7 @@ defmodule Miser.Application do
     source = {:service_account, credentials}
 
     children = [
-      Miser.ApplicationMetrics,
-      Miser.Metrics,
+      {Plug.Cowboy, scheme: :http, plug: Miser.Router, port: 9090},
       {Goth, name: Miser.Goth, source: source}
     ]
 

@@ -26,8 +26,11 @@ defmodule Miser.MixProject do
       {:google_api_monitoring,
        git: "git@github.com:akasprzok/google_api_monitoring_v3.git", branch: "main"},
       {:typed_struct, "~> 0.3"},
-      {:prom_ex, "~> 1.7"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      # https://github.com/deadtrickster/prometheus.ex/issues/48
+      {:prometheus_ex,
+       git: "https://github.com/lanodan/prometheus.ex", branch: "fix/elixir-1.14", override: true},
+      {:prometheus_plugs, "~> 1.1"}
     ]
   end
 end
