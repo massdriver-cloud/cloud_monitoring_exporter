@@ -1,4 +1,5 @@
 defmodule Miser.Client.ListTimeSeriesRequest do
+  @moduledoc false
   use TypedStruct
 
   typedstruct do

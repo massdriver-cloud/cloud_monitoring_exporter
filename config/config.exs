@@ -2,6 +2,8 @@ import Config
 
 config :miser, credentials_json: File.read!("credentials.json")
 
+config :prometheus, Miser.Exporter, path: "/"
+
 # Disable all the default collectors
 config :prometheus, :vm_dist_collector_metrics, []
 config :prometheus, :vm_memory_collector_metrics, []

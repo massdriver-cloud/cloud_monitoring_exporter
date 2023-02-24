@@ -1,0 +1,131 @@
+name: Test & Analyze
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  ELIXIR_VERSION: 1.14
+  OTP_VERSION: 25.x
+
+jobs:
+  Quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+
+      - name: Retrieve Mix Dependencies Cache
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: |
+            _build
+            deps
+          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-quality-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          restore-keys: |
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-quality-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-quality-${{ hashFiles('mix.lock') }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-quality-
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-
+
+      - name: Install Mix Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
+
+      - name: Check compiler warnings
+        run: mix compile --warnings-as-errors
+
+      - name: Check formatting
+        run: mix format --check-formatted
+
+      - name: Run Credo
+        run: mix credo --strict
+
+  Dialyzer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+
+      - name: Retrieve Mix Dependencies Cache
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: |
+            _build
+            deps
+          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          restore-keys: |
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-
+
+      - name: Install Mix Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
+
+      - name: Dialyzer
+        run: mix dialyzer
+
+
+  Test:
+    runs-on: ubuntu-latest
+    env:
+      MIX_ENV: test
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+
+      - name: Retrieve Mix Dependencies Cache
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: |
+            _build
+            deps
+          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-test-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          restore-keys: |
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-test-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-test-${{ hashFiles('mix.lock') }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-test-
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-
+
+      - name: Install Mix Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
+
+      - name: Run Tests
+        run: |
+          mix test --cover

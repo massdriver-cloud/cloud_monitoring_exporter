@@ -1,4 +1,15 @@
 defmodule Miser.Collector do
+  @moduledoc """
+  Usually, collectors aren't used directly.
+  Instead, higher level abstractions such as Histogram or Gauge are used.
+  But here we're effectively proxying Cloud Monitoring metrics to Prometheus,
+  so this is an extremely useful abstraction for us.
+  Firstly, collect_mf/2 is called whenever the /metrics endpoint is hit -
+  meaning we only need to hit the Cloud Monitoring API when Prometheus asks for metrics.
+  Secondly, since we're creating the entire payload from scratch every time,
+  we don't have to keep track of which metrics go away from one scrape to another -
+  we completely recreate the payload from the relevant metric descriptors on every scrape.
+  """
   use Prometheus.Collector
 
   alias Miser.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
@@ -33,7 +44,7 @@ defmodule Miser.Collector do
   end
 
   def collect_metrics(_name, request) do
-    with {:ok, response} = Miser.Client.list_time_series(request) do
+    with {:ok, response} <- Miser.Client.list_time_series(request) do
       point =
         response.timeSeries
         |> List.first()

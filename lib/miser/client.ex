@@ -4,9 +4,9 @@ defmodule Miser.Client do
   alias GoogleApi.Monitoring.V3.{Api, Connection, Model}
   alias Miser.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
 
-  @aggregation_perSeriesAligner "ALIGN_MEAN"
-  @aggregation_crossSeriesReducer "REDUCE_NONE"
-  @aggregation_alignmentPeriod "60s"
+  @aggregation_per_series_aligner "ALIGN_MEAN"
+  @aggregation_cross_series_reducer "REDUCE_NONE"
+  @aggregation_alignment_period "60s"
 
   def conn() do
     token_fetcher = fn _scopes ->
@@ -36,9 +36,9 @@ defmodule Miser.Client do
 
     opts = [
       {:filter, filters |> Enum.join(" ")},
-      {:"aggregation.alignmentPeriod", @aggregation_alignmentPeriod},
-      {:"aggregation.perSeriesAligner", @aggregation_perSeriesAligner},
-      {:"aggregation.crossSeriesReducer", @aggregation_crossSeriesReducer},
+      {:"aggregation.alignmentPeriod", @aggregation_alignment_period},
+      {:"aggregation.perSeriesAligner", @aggregation_per_series_aligner},
+      {:"aggregation.crossSeriesReducer", @aggregation_cross_series_reducer},
       {:"interval.endTime", end_time |> DateTime.to_iso8601()},
       {:"interval.startTime", start_time |> DateTime.to_iso8601()}
     ]

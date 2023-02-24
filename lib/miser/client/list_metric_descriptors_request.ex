@@ -1,4 +1,5 @@
 defmodule Miser.Client.ListMetricDescriptorsRequest do
+  @moduledoc false
   use TypedStruct
 
   typedstruct do
