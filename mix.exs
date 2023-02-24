@@ -27,7 +27,7 @@ defmodule Miser.MixProject do
     [
       {:goth, "~> 1.3"},
       {:google_api_monitoring,
-       git: "git@github.com:akasprzok/google_api_monitoring_v3.git", branch: "main"},
+       git: "https://github.com/akasprzok/google_api_monitoring_v3.git", branch: "main"},
       {:typed_struct, "~> 0.3"},
       {:plug_cowboy, "~> 2.5"},
       # https://github.com/deadtrickster/prometheus.ex/issues/48
