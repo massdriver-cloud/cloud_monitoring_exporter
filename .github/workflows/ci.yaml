@@ -42,7 +42,7 @@ jobs:
           mix local.rebar --force
           mix local.hex --force
           mix deps.get
-  dialyzer_setup:
+  Dialyzer:
     name: Dialyzer Setup
     runs-on: ubuntu-latest
     needs: setup
@@ -56,7 +56,7 @@ jobs:
           elixir-version: ${{ env.ELIXIR_VERSION }}
           otp-version: ${{ env.OTP_VERSION }}
       - name: Retrieve Mix Dependencies Cache
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         id: cache
         with:
           path: |
@@ -68,7 +68,7 @@ jobs:
             ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}
             ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-
       - name: Retrieve PLT Cache
-        uses: actions/cache@v1
+        uses: actions/cache/restore@v3
         id: plt-cache
         with:
           path: priv/plts
@@ -82,5 +82,11 @@ jobs:
         run: |
           mkdir -p priv/plts
           mix dialyzer --plt
-      - name: Run dialyzer
+      # We save the PLT cache even if running dialyzer fails.
+      - name: Save PLT cache
+        uses: actions/cache/save@v3
+        with:
+          path: priv/plts
+          key: ${{ steps.plat-cache.outputs.cache-primary-key }}
+      - name: Dialyzer
         run: mix dialyzer --no-check --halt-exit-status
