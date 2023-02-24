@@ -17,16 +17,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Setup BEAM
         uses: erlef/setup-beam@v1
         id: beam
         with:
           elixir-version: ${{ env.ELIXIR_VERSION }}
           otp-version: ${{ env.OTP_VERSION }}
-
       - name: Retrieve Mix Dependencies Cache
-        uses: actions/cache@v3
         id: cache
         with:
           path: |
@@ -51,6 +48,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+      - name: Retrieve Mix Dependencies Cache
+        id: cache
+        with:
+          path: |
+            _build
+            deps
+          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          restore-keys: |
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-
       - name: Retrieve PLT Cache
         uses: actions/cache@v1
         id: plt-cache
