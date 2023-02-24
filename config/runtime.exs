@@ -1,6 +1,10 @@
 import Config
 
-config :miser, credentials_json: File.read!("credentials.json")
+if config_env() == :prod do
+  config :miser, credentials_json: File.read!("credentials.json")
+else
+  config :miser, credentials_json: File.read!("credentials_test.json")
+end
 
 config :miser, Miser,
   project_id: "md-sandbox-andreas",
