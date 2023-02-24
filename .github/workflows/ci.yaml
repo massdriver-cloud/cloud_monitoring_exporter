@@ -11,7 +11,8 @@ env:
   MIX_ENV: test
 
 jobs:
-  Setup:
+  setup:
+    name: Install Elixir and Dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,3 +44,25 @@ jobs:
           mix local.rebar --force
           mix local.hex --force
           mix deps.get
+  dialyzer_setup:
+    name: Dialyzer Setup
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Retrieve PLT Cache
+        uses: actions/cache@v1
+        id: plt-cache
+        with:
+          path: priv/plts
+          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          restore-keys: |
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-
+      - name: Create PLTs
+        if: steps.plt-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p priv/plts
+          mix dialyzer --plt
+      - name: Run dialyzer
+        run: mix dialyzer --no-check --halt-exit-status
