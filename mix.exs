@@ -34,8 +34,8 @@ defmodule Miser.MixProject do
       {:prometheus_ex,
        git: "https://github.com/lanodan/prometheus.ex", branch: "fix/elixir-1.14", override: true},
       {:prometheus_plugs, "~> 1.1"},
-      {:credo, "~> 1.6", only: [:dev], runtime: false},
-      {:dialyxir, "~> 1.1", only: [:dev], runtime: false}
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false}
     ]
   end
 end
