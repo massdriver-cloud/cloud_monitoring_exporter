@@ -1,5 +1,7 @@
 import Config
 
+config :miser, credentials_json: File.read!("credentials.json")
+
 config :miser, Miser,
   project_id: "md-sandbox-andreas",
   metric_type_prefixes: [
