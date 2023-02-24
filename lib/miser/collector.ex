@@ -48,8 +48,6 @@ defmodule Miser.Collector do
         end)
       end
     end)
-
-    :ok
   end
 
   def collect_metrics(_name, request) do
