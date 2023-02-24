@@ -16,6 +16,8 @@ defmodule Miser.Collector do
   alias Miser.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
   alias Prometheus.Model
 
+  @impl true
+  @spec collect_mf(any, any) :: :ok
   def collect_mf(_registry, callback) do
     config = Application.get_env(:miser, Miser)
     project_id = Keyword.fetch!(config, :project_id)
