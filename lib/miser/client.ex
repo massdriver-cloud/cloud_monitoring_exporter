@@ -8,7 +8,7 @@ defmodule Miser.Client do
   @aggregation_cross_series_reducer "REDUCE_NONE"
   @aggregation_alignment_period "60s"
 
-  def conn() do
+  def conn do
     token_fetcher = fn _scopes ->
       {:ok, token} = Goth.fetch(Miser.Goth)
       token.token
