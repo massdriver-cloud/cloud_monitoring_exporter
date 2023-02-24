@@ -12,7 +12,7 @@ env:
 
 jobs:
   setup:
-    name: Install Elixir and Dependencies
+    name: Setup
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -42,8 +42,8 @@ jobs:
           mix local.rebar --force
           mix local.hex --force
           mix deps.get
-  Dialyzer:
-    name: Dialyzer Setup
+  dialyzer:
+    name: Dialyzer
     runs-on: ubuntu-latest
     needs: setup
     steps:
@@ -89,4 +89,4 @@ jobs:
           path: priv/plts
           key: ${{ steps.plat-cache.outputs.cache-primary-key }}
       - name: Dialyzer
-        run: mix dialyzer --no-check --halt-exit-status
+        run: mix dialyzer

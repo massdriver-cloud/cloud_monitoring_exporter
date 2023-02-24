@@ -1,7 +1,7 @@
 defmodule Miser.Client do
   @moduledoc "Client for interacting with the Monitoring API."
 
-  alias GoogleApi.Monitoring.V3.{Api, Connection, Model}
+  alias GoogleApi.Monitoring.V3.{Api, Connection}
   alias Miser.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
 
   @aggregation_per_series_aligner "ALIGN_MEAN"
@@ -17,9 +17,7 @@ defmodule Miser.Client do
     Connection.new(token_fetcher)
   end
 
-  @spec list_time_series(ListTimeSeriesRequest.t()) ::
-          {:ok, Model.ListTimeSeriesResponse.t()} | {:error, String.t()}
-  def list_time_series(request) do
+  def list_time_series(%ListTimeSeriesRequest{} = request) do
     end_time = DateTime.utc_now()
     start_time = end_time |> DateTime.add(request.interval_seconds * -1, :second)
 
