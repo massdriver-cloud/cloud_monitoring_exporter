@@ -15,7 +15,7 @@ defmodule Miser.Application do
     source = {:service_account, credentials}
 
     children = [
-      {Plug.Cowboy, scheme: :http, plug: Miser, port: 9090},
+      {Plug.Cowboy, scheme: :http, plug: Miser.Router, port: 9090},
       {Goth, name: Miser.Goth, source: source}
     ]
 

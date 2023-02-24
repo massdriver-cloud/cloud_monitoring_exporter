@@ -7,7 +7,7 @@ defmodule Miser.Router do
 
   forward("/metrics", to: Miser)
 
-  get(_) do
-    send_resp(conn, 404, "You don't seem to be hitting /metrics like you should.")
+  def handle_errors(conn, %{kind: _kind, reason: _reason, stack: _stack}) do
+    send_resp(conn, conn.status, "Something went wrong")
   end
 end
