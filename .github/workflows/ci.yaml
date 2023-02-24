@@ -87,6 +87,6 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: priv/plts
-          key: ${{ steps.plat-cache.outputs.cache-primary-key }}
+          key: ${{ steps.plt-cache.outputs.cache-primary-key }}
       - name: Dialyzer
         run: mix dialyzer
