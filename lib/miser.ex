@@ -1,5 +1,6 @@
 defmodule Miser do
   @moduledoc """
-  Miser is a tool for interacting with Google Cloud Monitoring APIs
+  MISeR is a Prometheus exporter for Google Cloud Monitoring metrics.
   """
+  use Prometheus.PlugExporter
 end

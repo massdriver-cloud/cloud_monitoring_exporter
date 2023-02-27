@@ -1,0 +1,151 @@
+name: Test & Analyze
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  ELIXIR_VERSION: 1.14
+  OTP_VERSION: 25.x
+  MIX_ENV: test
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+      - name: Retrieve Mix Dependencies Cache
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: |
+            _build
+            deps
+          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          restore-keys: |
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-
+
+      - name: Install Dependencies and Compile
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
+          mix compile
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+      - name: Retrieve Mix Dependencies Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: |
+            _build
+            deps
+          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          restore-keys: |
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-
+      - name: Check compiler warnings
+        run: mix compile --warnings-as-errors
+      - name: Check formatting
+        run: mix format --check-formatted
+      - name: Run Credo
+        run: mix credo --strict
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+      - name: Retrieve Mix Dependencies Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: |
+            _build
+            deps
+          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          restore-keys: |
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-
+      - name: Tests
+        run: mix test
+  dialyzer:
+    name: Dialyzer
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+      - name: Retrieve Mix Dependencies Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: |
+            _build
+            deps
+          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          restore-keys: |
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-
+      - name: Retrieve PLT Cache
+        uses: actions/cache/restore@v3
+        id: plt-cache
+        with:
+          path: priv/plts
+          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          restore-keys: |
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}
+            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-
+      - name: Create PLTs
+        if: steps.plt-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p priv/plts
+          mix dialyzer --plt
+      # We save the PLT cache even if running dialyzer fails.
+      - name: Save PLT cache
+        uses: actions/cache/save@v3
+        with:
+          path: priv/plts
+          key: ${{ steps.plt-cache.outputs.cache-primary-key }}
+      - name: Dialyzer
+        run: mix dialyzer

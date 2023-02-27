@@ -1,20 +1,15 @@
 import Config
 
-config :miser, Miser.ApplicationMetrics,
-  disabled: not Env.get("ENABLE_APPLICATION_METRICS", :boolean, false),
-  manual_metrics_start_delay: :no_delay,
-  drop_metrics_groups: [],
-  grafana: :disabled,
-  metrics_server: [
-    enabled: true,
-    port: 9091,
-    path: "/metrics"
-  ]
+if config_env() == :prod do
+  config :miser, credentials_json: File.read!("credentials.json")
+else
+  config :miser, credentials_json: File.read!("credentials_test.json")
+end
 
-config :miser, Miser.Metrics.Poller,
+config :miser, Miser,
   project_id: "md-sandbox-andreas",
-  metrics_type_prefixes: [
-    "cloudsql.googleapis.com/database/cpu/utilization"
+  metric_type_prefixes: [
+    "cloudsql.googleapis.com/database/cpu"
   ],
   user_labels: %{
     "managed-by" => "massdriver",
