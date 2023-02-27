@@ -2,5 +2,16 @@
     "dockerFile": "Dockerfile",
     "name": "miser",
     "onCreateCommand": "elixir --version",
+    "extensions": [
+		"jakebecker.elixir-ls",
+		"sainnhe.gruvbox-material",
+		"joshjg.vscode-credo",
+		"4ops.terraform",
+		"eamodio.gitlens",
+		"GitHub.copilot"
+	],
+  "settings": {
+		"terminal.integrated.shell.linux": null
+	},
     "forwardPorts": [9090]
   }
