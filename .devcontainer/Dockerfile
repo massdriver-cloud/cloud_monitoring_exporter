@@ -12,7 +12,8 @@ RUN apk --no-cache add \
     python3 \
     gcc \
     musl-dev \
-    python3-dev
+    python3-dev \
+    openssh
 
 
 RUN wget https://github.com/pre-commit/pre-commit/releases/download/v2.20.0/pre-commit-2.20.0.pyz \
