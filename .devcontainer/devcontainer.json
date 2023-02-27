@@ -1,0 +1,6 @@
+{
+    "dockerFile": "Dockerfile",
+    "name": "miser",
+    "onCreateCommand": "elixir --version",
+    "forwardPorts": [9090]
+  }
