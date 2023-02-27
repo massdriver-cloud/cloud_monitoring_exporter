@@ -2,6 +2,12 @@
     "dockerFile": "Dockerfile",
     "name": "miser",
     "onCreateCommand": "elixir --version",
-	"mounts": ["source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind"],
-    "forwardPorts": [9090]
+    "forwardPorts": [9090],
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "git.path": "/usr/bin/git"
+            }
+        }
+    }
   }
