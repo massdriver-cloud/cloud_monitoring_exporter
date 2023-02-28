@@ -10,7 +10,3 @@ updates:
       timezone: "America/Los_Angeles"
     # Will only open a max of 3 PRs.
     open-pull-requests-limit: 3
-    ignore:
-      # 0.12 to 0.13 has some non-trivial API changes.
-      # Marking this update low prio until it starts biting us.
-      - dependency-name: "solid"

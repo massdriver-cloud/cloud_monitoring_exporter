@@ -1,0 +1,16 @@
+{
+    "dockerFile": "Dockerfile",
+    "name": "miser",
+    "onCreateCommand": "elixir --version",
+    "forwardPorts": [9090],
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "jakebecker.elixir-ls",
+          "joshjg.vscode-credo",
+          "eamodio.gitlens",
+          "GitHub.copilot"
+        ]
+      }
+    }
+  }
