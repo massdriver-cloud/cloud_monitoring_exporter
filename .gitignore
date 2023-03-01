@@ -30,3 +30,4 @@ azure_metrics_exporter_proxy-*.tar
 _build
 
 credentials.json
+config.yml

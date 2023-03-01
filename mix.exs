@@ -36,7 +36,8 @@ defmodule Miser.MixProject do
       {:prometheus_ex,
        git: "https://github.com/lanodan/prometheus.ex", branch: "fix/elixir-1.14", override: true},
       {:prometheus_plugs, "~> 1.1"},
-      {:typed_struct, "~> 0.3"}
+      {:typed_struct, "~> 0.3"},
+      {:yaml_elixir, "~> 2.9"}
     ]
   end
 
