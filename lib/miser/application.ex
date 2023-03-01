@@ -8,15 +8,9 @@ defmodule Miser.Application do
     Prometheus.Registry.register_collector(Miser.Collector)
     Miser.setup()
 
-    credentials =
-      Application.get_env(:miser, :credentials_json)
-      |> Jason.decode!()
-
-    source = {:service_account, credentials}
-
     children = [
       {Plug.Cowboy, scheme: :http, plug: Miser.Router, port: 9090},
-      {Goth, name: Miser.Goth, source: source}
+      {Goth, name: Miser.Goth}
     ]
 
     opts = [strategy: :one_for_one, name: Miser.Supervisor]

@@ -1,0 +1,13 @@
+version: "3"
+services:
+  miser:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/config/credentials.json
+    volumes:
+      - .:/app
+      - ${PWD}/credentials.json:/config/credentials.json
+    ports:
+      - "9090:9090"
