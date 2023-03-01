@@ -21,10 +21,10 @@ defmodule Miser.Collector do
   def collect_mf(_registry, callback) do
     config = Application.get_env(:miser, Miser)
     project_id = Map.fetch!(config, :project_id)
-    user_labels = Map.fetch!(config, :user_labels)
+    user_labels = Map.get(config, :user_labels, %{})
 
     config
-    |> Map.fetch!(:metric_type_prefixes)
+    |> Map.get(:metric_type_prefixes, [])
     # should probably parallelize this
     |> Enum.each(fn metric_type_prefix ->
       request = %ListMetricDescriptorsRequest{
