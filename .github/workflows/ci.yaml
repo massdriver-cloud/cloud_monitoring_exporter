@@ -149,3 +149,10 @@ jobs:
           key: ${{ steps.plt-cache.outputs.cache-primary-key }}
       - name: Dialyzer
         run: mix dialyzer
+  build:
+    name: Build Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: docker build .
