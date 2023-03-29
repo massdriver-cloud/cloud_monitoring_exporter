@@ -17,7 +17,7 @@ jobs:
       - name: Install Massdriver CLI
         uses: massdriver-cloud/actions/setup@v3
       - name: Push Image
-        uses: massdriver-cloud/actions/image_push@a8c4c508049ac27b3409a6260c62c5d84656f2df
+        uses: massdriver-cloud/actions/image_push@andreas/more_actions
         with:
           namespace: 'andreas-test'
           image-name: 'miser'
