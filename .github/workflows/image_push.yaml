@@ -1,0 +1,24 @@
+name: Push Image
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      MASSDRIVER_API_KEY: ${{ secrets.MASSDRIVER_API_KEY }}
+      MASSDRIVER_ORG_ID: ${{ secrets.MASSDRIVER_ORG_ID }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Massdriver CLI
+        uses: massdriver-cloud/actions/setup@v3
+      - name: Push Image
+        run: massdriver-cloud/actions/image_push@andreas/more_actions
+        with:
+          - namespace: andreas-test
+          - image-name: miser
+          - artifact: ${{ secrets.MASSDRIVER_ARTIFACT_ID }}
+          - region: us-west-2
