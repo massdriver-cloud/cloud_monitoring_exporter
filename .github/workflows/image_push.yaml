@@ -1,0 +1,23 @@
+name: Push Image
+on:
+  push:
+    branches: [main]
+
+jobs:
+  image_push:
+    name: Push Image
+    runs-on: ubuntu-latest
+    env:
+      MASSDRIVER_API_KEY: ${{ secrets.XO_PRODUCTION_DEPLOYER_SA }}
+      MASSDRIVER_ORG_ID: ${{ secrets.PRODUCTION_ORGANIZATION_ID }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Massdriver CLI
+        uses: massdriver-cloud/actions/setup@v3.1
+      - name: Push Image
+        uses: massdriver-cloud/actions/image_push@v3.1
+        with:
+          namespace: 'mcm'
+          image-name: 'miser'
+          artifact: ${{ secrets.XO_PRODUCTION_AWS_ARTIFACT_ID }}
+          region: 'us-west-2'
