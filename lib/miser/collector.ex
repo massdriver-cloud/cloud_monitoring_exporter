@@ -12,19 +12,17 @@ defmodule Miser.Collector do
   """
   use Prometheus.Collector
 
-  alias Miser.Client
+  alias Miser.{Client, Config}
   alias Miser.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
   alias Prometheus.Model
 
   @impl true
   @spec collect_mf(any, any) :: :ok
   def collect_mf(_registry, callback) do
-    config = Application.get_env(:miser, Miser)
-    project_id = Map.fetch!(config, "project_id")
-    user_labels = Map.get(config, "user_labels", %{})
+    project_id = Config.project_id()
+    user_labels = Config.user_labels()
 
-    config
-    |> Map.get("metric_type_prefixes", [])
+    Config.metric_type_prefixes()
     # should probably parallelize this
     |> Enum.each(fn metric_type_prefix ->
       request = %ListMetricDescriptorsRequest{

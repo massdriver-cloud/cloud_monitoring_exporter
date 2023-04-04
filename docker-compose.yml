@@ -7,7 +7,11 @@ services:
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/config/credentials.json
     volumes:
-      - ${PWD}/credentials.json:/config/credentials.json
-      - ${PWD}/config.yml:/config/config.yml
+      - type: bind
+        source: ./credentials.json
+        target: /config/credentials.json
+      - type: bind
+        source: ./config.yml
+        target: /config/config.yml
     ports:
       - "9090:9090"
