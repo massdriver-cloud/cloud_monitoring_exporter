@@ -16,7 +16,7 @@ defmodule CloudMonitoringExporter.Config do
 
   def metric_type_prefixes, do: Keyword.fetch!(config(), :metric_type_prefixes)
 
-  defp config(), do: Application.fetch_env!(:cloud_monitoring_exporter, __MODULE__)
+  defp config, do: Application.fetch_env!(:cloud_monitoring_exporter, __MODULE__)
 
   def evaluate_config_file(path) do
     config_map = YamlElixir.read_from_file!(path)
