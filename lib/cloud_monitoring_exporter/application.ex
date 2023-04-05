@@ -6,6 +6,7 @@ defmodule CloudMonitoringExporter.Application do
   @impl true
   def start(_type, _args) do
     Prometheus.Registry.register_collector(CloudMonitoringExporter.Collector)
+    CloudMonitoringExporter.setup()
 
     children = [
       {Plug.Cowboy, scheme: :http, plug: CloudMonitoringExporter.Router, port: 9090},
