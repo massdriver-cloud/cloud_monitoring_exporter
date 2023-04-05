@@ -1,3 +1,3 @@
 import Config
 
-config :miser, Miser.Config, file: "/config/config.yml"
+config :cloud_monitoring_exporter, CloudMonitoringExporter.Config, file: "/config/config.yml"

@@ -31,5 +31,5 @@ ENV MIX_ENV=prod
 RUN mkdir /app
 WORKDIR /app
 
-COPY --from=build /app/_build/prod/rel/miser .
-CMD ["/app/bin/miser", "start"]
+COPY --from=build /app/_build/prod/rel/cloud_monitoring_exporter .
+CMD ["/app/bin/cloud_monitoring_exporter", "start"]

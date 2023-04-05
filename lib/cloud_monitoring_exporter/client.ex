@@ -1,8 +1,8 @@
-defmodule Miser.Client do
+defmodule CloudMonitoringExporter.Client do
   @moduledoc "Client for interacting with the Monitoring API."
 
   alias GoogleApi.Monitoring.V3.{Api, Connection}
-  alias Miser.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
+  alias CloudMonitoringExporter.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
 
   @aggregation_per_series_aligner "ALIGN_MEAN"
   @aggregation_cross_series_reducer "REDUCE_NONE"
@@ -10,7 +10,7 @@ defmodule Miser.Client do
 
   def conn do
     token_fetcher = fn _scopes ->
-      {:ok, token} = Goth.fetch(Miser.Goth)
+      {:ok, token} = Goth.fetch(CloudMonitoringExporter.Goth)
       token.token
     end
 

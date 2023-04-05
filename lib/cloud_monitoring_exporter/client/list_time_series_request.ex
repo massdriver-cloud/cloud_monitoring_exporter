@@ -1,4 +1,4 @@
-defmodule Miser.Client.ListTimeSeriesRequest do
+defmodule CloudMonitoringExporter.Client.ListTimeSeriesRequest do
   @moduledoc false
   use TypedStruct
 

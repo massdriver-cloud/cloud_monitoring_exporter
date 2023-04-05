@@ -1,4 +1,4 @@
-defmodule Miser.Collector do
+defmodule CloudMonitoringExporter.Collector do
   @moduledoc """
   Usually, collectors aren't used directly.
   Instead, higher level abstractions such as Histogram or Gauge are used.
@@ -12,8 +12,8 @@ defmodule Miser.Collector do
   """
   use Prometheus.Collector
 
-  alias Miser.{Client, Config}
-  alias Miser.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
+  alias CloudMonitoringExporter.{Client, Config}
+  alias CloudMonitoringExporter.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
   alias Prometheus.Model
 
   @impl true
