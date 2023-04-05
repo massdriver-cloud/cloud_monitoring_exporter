@@ -1,8 +1,6 @@
-# MISeR - A Google Cloud Monitoring Metrics Exporter
+# Cloud Monitoring Exporter
 
-MISeR is a [Prometheus Exporter](https://prometheus.io/docs/instrumenting/exporters/#exporters-and-integrations) for [Google Cloud Monitoring](https://cloud.google.com/monitoring/) metrics.
-
-It is written in Elixir and originated at [Massdriver](https://massdriver.cloud).
+A [Prometheus Exporter](https://prometheus.io/docs/instrumenting/exporters/#exporters-and-integrations) for [Google Cloud Monitoring](https://cloud.google.com/monitoring/) metrics.
 
 # Features
 
