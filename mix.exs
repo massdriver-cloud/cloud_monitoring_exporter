@@ -31,7 +31,7 @@ defmodule CloudMonitoringExporter.MixProject do
       {:google_api_monitoring,
        git: "https://github.com/akasprzok/google_api_monitoring_v3.git", branch: "main"},
       {:goth, "~> 1.3"},
-      {:plug_cowboy, "~> 2.6"},
+      {:plug_cowboy, "~> 2.6.0"},
       # https://github.com/deadtrickster/prometheus.ex/issues/48
       {:prometheus_ex,
        git: "https://github.com/lanodan/prometheus.ex", branch: "fix/elixir-1.14", override: true},
