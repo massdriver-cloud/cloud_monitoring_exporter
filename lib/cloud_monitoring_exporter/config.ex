@@ -2,7 +2,7 @@ defmodule CloudMonitoringExporter.Config do
   @moduledoc false
 
   def configure do
-    Application.get_env(:cloud_monitoring_exporter, __MODULE__)
+    config()
     |> Keyword.get(:file)
     |> case do
       nil -> :ok
@@ -10,20 +10,13 @@ defmodule CloudMonitoringExporter.Config do
     end
   end
 
-  def project_id do
-    Application.fetch_env!(:cloud_monitoring_exporter, __MODULE__)
-    |> Keyword.fetch!(:project_id)
-  end
+  def project_id, do: Keyword.fetch!(config(), :project_id)
 
-  def user_labels do
-    Application.fetch_env!(:cloud_monitoring_exporter, __MODULE__)
-    |> Keyword.get(:user_labels, [])
-  end
+  def user_labels, do: Keyword.get(config(), :user_labels, [])
 
-  def metric_type_prefixes do
-    Application.fetch_env!(:cloud_monitoring_exporter, __MODULE__)
-    |> Keyword.fetch!(:metric_type_prefixes)
-  end
+  def metric_type_prefixes, do: Keyword.fetch!(config(), :metric_type_prefixes)
+
+  defp config(), do: Application.fetch_env!(:cloud_monitoring_exporter, __MODULE__)
 
   def evaluate_config_file(path) do
     config_map = YamlElixir.read_from_file!(path)
