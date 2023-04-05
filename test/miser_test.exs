@@ -1,4 +1,4 @@
-defmodule MiserTest do
+defmodule CloudMonitoringExporterTest do
   use ExUnit.Case
-  doctest Miser
+  doctest CloudMonitoringExporter
 end

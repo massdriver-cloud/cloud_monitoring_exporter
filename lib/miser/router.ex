@@ -1,11 +1,11 @@
-defmodule Miser.Router do
+defmodule CloudMonitoringExporter.Router do
   use Plug.Router
   use Plug.ErrorHandler
 
   plug(:match)
   plug(:dispatch)
 
-  forward("/metrics", to: Miser)
+  forward("/metrics", to: CloudMonitoringExporter)
 
   match _ do
     send_resp(conn, 404, "Oops!")

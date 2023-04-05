@@ -1,6 +1,6 @@
 import Config
 
-config :prometheus, Miser, path: "/"
+config :prometheus, CloudMonitoringExporter, path: "/"
 
 # Disable all the default collectors
 config :prometheus, :vm_dist_collector_metrics, []

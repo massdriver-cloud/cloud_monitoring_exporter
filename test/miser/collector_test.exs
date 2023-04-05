@@ -1,4 +1,4 @@
-defmodule Miser.CollectorTest do
+defmodule CloudMonitoringExporter.CollectorTest do
   use ExUnit.Case
-  doctest Miser.Collector
+  doctest CloudMonitoringExporter.Collector
 end

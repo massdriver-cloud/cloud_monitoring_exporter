@@ -1,4 +1,4 @@
-defmodule Miser.RouterTest do
+defmodule CloudMonitoringExporter.RouterTest do
   use ExUnit.Case
-  doctest Miser.Router
+  doctest CloudMonitoringExporter.Router
 end

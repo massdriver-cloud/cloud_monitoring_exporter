@@ -1,6 +1,6 @@
 {
     "dockerFile": "Dockerfile",
-    "name": "miser",
+    "name": "cloud_monitoring_exporter",
     "onCreateCommand": "elixir --version",
     "forwardPorts": [9090],
     "customizations": {

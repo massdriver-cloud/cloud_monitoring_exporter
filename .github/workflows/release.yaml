@@ -22,4 +22,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.PUBLIC_DOCKER_HUB_USERNAME }}/phoenix-chat-example:latest
+          tags: ${{ secrets.PUBLIC_DOCKER_HUB_USERNAME }}/cloud_monitoring_exporter:latest

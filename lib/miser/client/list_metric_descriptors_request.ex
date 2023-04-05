@@ -1,4 +1,4 @@
-defmodule Miser.Client.ListMetricDescriptorsRequest do
+defmodule CloudMonitoringExporter.Client.ListMetricDescriptorsRequest do
   @moduledoc false
   use TypedStruct
 

@@ -4,7 +4,7 @@ A [Prometheus Exporter](https://prometheus.io/docs/instrumenting/exporters/#expo
 
 # Features
 
-* Export metrics from Google Cloud Monitoring to Prometheus
+* Export metrics from GCP Cloud Monitoring to Prometheus
 * Simple configuration of metrics using metric type prefixes
 * Auto discovery of resources via tags
 * Adds any available dimension labels to metrics

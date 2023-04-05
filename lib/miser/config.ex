@@ -1,12 +1,8 @@
-defmodule Miser.Config do
-  @moduledoc """
-  Managed Miser config.any()
-
-  This useful wrapper lets us evaluate config files for when this thing is configured on k8s.
-  """
+defmodule CloudMonitoringExporter.Config do
+  @moduledoc false
 
   def configure do
-    Application.get_env(:miser, __MODULE__)
+    Application.get_env(:cloud_monitoring_exporter, __MODULE__)
     |> Keyword.get(:file)
     |> case do
       nil -> :ok
@@ -15,17 +11,17 @@ defmodule Miser.Config do
   end
 
   def project_id do
-    Application.fetch_env!(:miser, __MODULE__)
+    Application.fetch_env!(:cloud_monitoring_exporter, __MODULE__)
     |> Keyword.fetch!(:project_id)
   end
 
   def user_labels do
-    Application.fetch_env!(:miser, __MODULE__)
+    Application.fetch_env!(:cloud_monitoring_exporter, __MODULE__)
     |> Keyword.get(:user_labels, [])
   end
 
   def metric_type_prefixes do
-    Application.fetch_env!(:miser, __MODULE__)
+    Application.fetch_env!(:cloud_monitoring_exporter, __MODULE__)
     |> Keyword.fetch!(:metric_type_prefixes)
   end
 
@@ -38,6 +34,6 @@ defmodule Miser.Config do
       metric_type_prefixes: Map.fetch!(config_map, "metric_type_prefixes")
     ]
 
-    Application.put_env(:miser, __MODULE__, config)
+    Application.put_env(:cloud_monitoring_exporter, __MODULE__, config)
   end
 end

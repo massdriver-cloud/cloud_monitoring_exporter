@@ -1,9 +1,9 @@
-defmodule Miser.MixProject do
+defmodule CloudMonitoringExporter.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :miser,
+      app: :cloud_monitoring_exporter,
       deps: deps(),
       dialyzer: dialyzer(),
       elixir: "~> 1.14",
@@ -19,7 +19,7 @@ defmodule Miser.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Miser.Application, []}
+      mod: {CloudMonitoringExporter.Application, []}
     ]
   end
 
