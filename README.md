@@ -47,3 +47,23 @@ user_labels:
 By default, the exporter is exposed on port `9090`, path `/metrics`.
 
 Metrics are queried at the time of scraping and are not cached.
+
+To adhere to the [Prometheus data model](https://prometheus.io/docs/concepts/data_model/), metric names are converted to [snake case](https://en.wikipedia.org/wiki/Snake_case) and all non-alphanumeric characters are replaced with underscores.
+
+For example, the metric `cloudsql.googleapis.com/database/cpu/utilization` will be exported as `cloudsql_googleapis_com_database_cpu_utilization`.
+
+All metrics are exported as [gauges](https://prometheus.io/docs/concepts/metric_types/#gauge), and the #HELP comment is set to the metric's description as supplied by the [GCP Cloud Monitoring API](https://cloud.google.com/monitoring/api/v3).
+
+# Deployment
+
+Images for the exporter are available on [Docker Hub](https://hub.docker.com/r/massdrivercloud/cloud_monitoring_exporter).
+
+An example [docker-compose](./docker-compose.yml) file is included in this repository. It requires a `config.yml` and GCP `credentials.json` in the directory.
+
+After starting the exporter with `docker-compose up`, metrics will be available at `http://localhost:9090/metrics`.
+
+The docker file can be used to deploy the exporter to any container runtime - we use [Kubernetes](https://kubernetes.io/).
+
+# Questions?
+
+If you have any questions or suggestions, please [open an issue](https://github.com/massdriver-cloud/cloud_monitoring_exporter/issues/new)! We'd love to hear from you.
