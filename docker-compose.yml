@@ -1,9 +1,8 @@
 version: "3"
 services:
   cloud_monitoring_exporter:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    container_name: "cloud_monitoring_exporter"
+    image: "massdrivercloud/cloud_monitoring_exporter:latest"
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/config/credentials.json
     volumes:
