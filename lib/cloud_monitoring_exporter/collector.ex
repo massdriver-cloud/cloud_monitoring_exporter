@@ -50,13 +50,18 @@ defmodule CloudMonitoringExporter.Collector do
 
   def collect_metrics(_name, request) do
     with {:ok, response} <- Client.list_time_series(request) do
-      response.timeSeries
-      |> Enum.map(fn time_series ->
-        value_type = time_series.valueType
-        value = time_series.points |> List.first() |> Map.get(:value) |> get_value(value_type)
-        labels = time_series.resource.labels |> Enum.into([])
-        Model.gauge_metric(labels, value)
-      end)
+      case response.timeSeries do
+        nil ->
+          []
+
+        list when is_list(list) ->
+          Enum.map(list, fn time_series ->
+            value_type = time_series.valueType
+            value = time_series.points |> List.first() |> Map.get(:value) |> get_value(value_type)
+            labels = time_series.resource.labels |> Enum.into([])
+            Model.gauge_metric(labels, value)
+          end)
+      end
     end
   end
 
