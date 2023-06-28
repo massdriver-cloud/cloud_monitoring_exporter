@@ -64,6 +64,10 @@ After starting the exporter with `docker-compose up`, metrics will be available 
 
 The docker file can be used to deploy the exporter to any container runtime - we use [Kubernetes](https://kubernetes.io/).
 
+# Missing Features
+
+* Currently no support for Distributions.
+
 # Questions?
 
 If you have any questions or suggestions, please [open an issue](https://github.com/massdriver-cloud/cloud_monitoring_exporter/issues/new)! We'd love to hear from you.

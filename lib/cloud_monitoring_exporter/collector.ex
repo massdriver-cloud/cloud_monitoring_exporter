@@ -25,6 +25,8 @@ defmodule CloudMonitoringExporter.Collector do
     Config.metric_type_prefixes()
     # should probably parallelize this
     |> Enum.each(fn metric_type_prefix ->
+      IO.inspect(metric_type_prefix)
+
       request = %ListMetricDescriptorsRequest{
         project_id: project_id,
         user_labels: user_labels,
@@ -33,7 +35,10 @@ defmodule CloudMonitoringExporter.Collector do
 
       with {:ok, response} <- Client.list_metric_descriptors(request) do
         response.metricDescriptors
+        # TODO: Handle Distributions
+        |> Enum.reject(&match?(%{valueType: "DISTRIBUTION"}, &1))
         |> Enum.map(fn descriptor ->
+          IO.inspect(descriptor)
           name = to_prometheus_name(descriptor.type)
 
           request = %ListTimeSeriesRequest{
@@ -55,7 +60,8 @@ defmodule CloudMonitoringExporter.Collector do
           []
 
         list when is_list(list) ->
-          Enum.map(list, fn time_series ->
+          list
+          |> Enum.each(fn time_series ->
             value_type = time_series.valueType
             value = time_series.points |> List.first() |> Map.get(:value) |> get_value(value_type)
             resource_labels = time_series.resource.labels |> Enum.into([])
