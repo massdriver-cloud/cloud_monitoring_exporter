@@ -23,33 +23,36 @@ defmodule CloudMonitoringExporter.Collector do
     user_labels = Config.user_labels()
 
     Config.metric_type_prefixes()
-    |> Task.async_stream(fn metric_type_prefix ->
-      request = %ListMetricDescriptorsRequest{
-        project_id: project_id,
-        user_labels: user_labels,
-        metric_type_prefix: metric_type_prefix
-      }
+    |> Task.async_stream(
+      fn metric_type_prefix ->
+        request = %ListMetricDescriptorsRequest{
+          project_id: project_id,
+          user_labels: user_labels,
+          metric_type_prefix: metric_type_prefix
+        }
 
-      with {:ok, response} <- Client.list_metric_descriptors(request) do
-        response.metricDescriptors
-        # Instead of ignoring these, we need to start handling them correctly
-        |> Enum.reject(&match?(%{valueType: "DISTRIBUTION"}, &1))
-        |> Enum.reject(&match?(%{metricKind: "GAUGE", valueType: "BOOL"}, &1))
-        |> Enum.reject(&match?(%{metricKind: "GAUGE", valueType: "STRING"}, &1))
-        |> Enum.reject(&match?(%{metricKind: "CUMULATIVE", valueType: "INT64"}, &1))
-        |> Enum.map(fn descriptor ->
-          name = to_prometheus_name(descriptor.type)
+        with {:ok, response} <- Client.list_metric_descriptors(request) do
+          response.metricDescriptors
+          # Instead of ignoring these, we need to start handling them correctly
+          |> Enum.reject(&match?(%{valueType: "DISTRIBUTION"}, &1))
+          |> Enum.reject(&match?(%{metricKind: "GAUGE", valueType: "BOOL"}, &1))
+          |> Enum.reject(&match?(%{metricKind: "GAUGE", valueType: "STRING"}, &1))
+          |> Enum.reject(&match?(%{metricKind: "CUMULATIVE", valueType: "INT64"}, &1))
+          |> Enum.map(fn descriptor ->
+            name = to_prometheus_name(descriptor.type)
 
-          request = %ListTimeSeriesRequest{
-            project_id: project_id,
-            user_labels: user_labels,
-            metric_type: descriptor.type
-          }
+            request = %ListTimeSeriesRequest{
+              project_id: project_id,
+              user_labels: user_labels,
+              metric_type: descriptor.type
+            }
 
-          create_gauge(name, descriptor.description, request)
-        end)
-      end
-    end, timeout: 15_000)
+            create_gauge(name, descriptor.description, request)
+          end)
+        end
+      end,
+      timeout: 15_000
+    )
     |> Enum.map(fn {:ok, gauges} -> Enum.map(gauges, &callback.(&1)) end)
 
     :ok
