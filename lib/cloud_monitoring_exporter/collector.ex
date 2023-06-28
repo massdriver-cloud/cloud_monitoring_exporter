@@ -58,7 +58,11 @@ defmodule CloudMonitoringExporter.Collector do
           Enum.map(list, fn time_series ->
             value_type = time_series.valueType
             value = time_series.points |> List.first() |> Map.get(:value) |> get_value(value_type)
-            labels = time_series.resource.labels |> Enum.into([])
+            IO.inspect(time_series)
+            resource_labels = time_series.resource.labels |> Enum.into([])
+            namespace_label = {"Namespace", time_series.resource.type}
+            name_label = {"Name", time_series.metric.type}
+            labels = [namespace_label, name_label] ++ resource_labels
             Model.gauge_metric(labels, value)
           end)
       end
