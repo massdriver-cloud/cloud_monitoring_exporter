@@ -23,32 +23,44 @@ defmodule CloudMonitoringExporter.Collector do
     user_labels = Config.user_labels()
 
     Config.metric_type_prefixes()
-    # should probably parallelize this
-    |> Enum.each(fn metric_type_prefix ->
-      request = %ListMetricDescriptorsRequest{
-        project_id: project_id,
-        user_labels: user_labels,
-        metric_type_prefix: metric_type_prefix
-      }
+    |> Task.async_stream(
+      fn metric_type_prefix ->
+        request = %ListMetricDescriptorsRequest{
+          project_id: project_id,
+          user_labels: user_labels,
+          metric_type_prefix: metric_type_prefix
+        }
 
-      with {:ok, response} <- Client.list_metric_descriptors(request) do
-        response.metricDescriptors
-        # Instead of ignoring, we should turn Distributions into Prometheus Histograms
-        |> Enum.reject(&match?(%{valueType: "DISTRIBUTION"}, &1))
-        |> Enum.map(fn descriptor ->
-          name = to_prometheus_name(descriptor.type)
+        with {:ok, response} <- Client.list_metric_descriptors(request) do
+          response.metricDescriptors
+          |> Enum.reject(&reject_descriptor?/1)
+          |> Enum.map(fn descriptor ->
+            name = to_prometheus_name(descriptor.type)
 
-          request = %ListTimeSeriesRequest{
-            project_id: project_id,
-            user_labels: user_labels,
-            metric_type: descriptor.type
-          }
+            request = %ListTimeSeriesRequest{
+              project_id: project_id,
+              user_labels: user_labels,
+              metric_type: descriptor.type
+            }
 
-          callback.(create_gauge(name, descriptor.description, request))
-        end)
-      end
-    end)
+            create_gauge(name, descriptor.description, request)
+          end)
+        end
+      end,
+      timeout: 15_000
+    )
+    |> Enum.each(fn {:ok, gauges} -> Enum.map(gauges, &callback.(&1)) end)
   end
+
+  @doc """
+  We should handle these in the future instead of dropping them on the floor.
+  """
+  @spec reject_descriptor?(map()) :: boolean()
+  def reject_descriptor?(%{valueType: "DISTRIBUTION"}), do: true
+  def reject_descriptor?(%{metricKind: "GAUGE", valueType: "BOOL"}), do: true
+  def reject_descriptor?(%{metricKind: "GAUGE", valueType: "STRING"}), do: true
+  def reject_descriptor?(%{metricKind: "CUMULATIVE", valueType: "INT64"}), do: true
+  def reject_descriptor?(_), do: false
 
   def collect_metrics(_name, request) do
     with {:ok, response} <- Client.list_time_series(request) do
@@ -58,7 +70,7 @@ defmodule CloudMonitoringExporter.Collector do
 
         list when is_list(list) ->
           list
-          |> Enum.each(fn time_series ->
+          |> Task.async_stream(fn time_series ->
             value_type = time_series.valueType
             value = time_series.points |> List.first() |> Map.get(:value) |> get_value(value_type)
             resource_labels = time_series.resource.labels |> Enum.into([])
@@ -67,6 +79,7 @@ defmodule CloudMonitoringExporter.Collector do
             labels = [namespace_label, name_label] ++ resource_labels
             Model.gauge_metric(labels, value)
           end)
+          |> Stream.run()
       end
     end
   end
