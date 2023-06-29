@@ -131,11 +131,9 @@ jobs:
         id: plt-cache
         with:
           path: priv/plts
-          key: ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}-${{ github.ref }}
+          key: plt-${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-${{ hashFiles('mix.lock') }}
           restore-keys: |
-            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}-refs/heads/${{ github.event.repository.default_branch }}
-            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-${{ hashFiles('mix.lock') }}
-            ${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-dialyzer-
+            plt-${{runner.os}}-${{steps.beam.output.otp-version}}-${{steps.beam.outputs.elixir-version}}-
       - name: Create PLTs
         if: steps.plt-cache.outputs.cache-hit != 'true'
         run: |
