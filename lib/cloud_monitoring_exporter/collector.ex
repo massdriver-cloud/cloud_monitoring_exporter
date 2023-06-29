@@ -33,11 +33,7 @@ defmodule CloudMonitoringExporter.Collector do
 
         with {:ok, response} <- Client.list_metric_descriptors(request) do
           response.metricDescriptors
-          # Instead of ignoring these, we need to start handling them correctly
-          |> Enum.reject(&match?(%{valueType: "DISTRIBUTION"}, &1))
-          |> Enum.reject(&match?(%{metricKind: "GAUGE", valueType: "BOOL"}, &1))
-          |> Enum.reject(&match?(%{metricKind: "GAUGE", valueType: "STRING"}, &1))
-          |> Enum.reject(&match?(%{metricKind: "CUMULATIVE", valueType: "INT64"}, &1))
+          |> Enum.reject(&reject_descriptor?/1)
           |> Enum.map(fn descriptor ->
             name = to_prometheus_name(descriptor.type)
 
@@ -53,10 +49,18 @@ defmodule CloudMonitoringExporter.Collector do
       end,
       timeout: 15_000
     )
-    |> Enum.map(fn {:ok, gauges} -> Enum.map(gauges, &callback.(&1)) end)
-
-    :ok
+    |> Enum.each(fn {:ok, gauges} -> Enum.map(gauges, &callback.(&1)) end)
   end
+
+  @doc """
+  We should handle these in the future instead of dropping them on the floor.
+  """
+  @spec reject_descriptor?(map()) :: boolean()
+  def reject_descriptor?(%{valueType: "DISTRIBUTION"}), do: true
+  def reject_descriptor?(%{metricKind: "GAUGE", valueType: "BOOL"}), do: true
+  def reject_descriptor?(%{metricKind: "GAUGE", valueType: "STRING"}), do: true
+  def reject_descriptor?(%{metricKind: "CUMULATIVE", valueType: "INT64"}), do: true
+  def reject_descriptor?(_), do: false
 
   def collect_metrics(_name, request) do
     with {:ok, response} <- Client.list_time_series(request) do
