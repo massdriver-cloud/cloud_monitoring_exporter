@@ -12,6 +12,8 @@ defmodule CloudMonitoringExporter.Collector do
   """
   use Prometheus.Collector
 
+  require Logger
+
   alias CloudMonitoringExporter.{Client, Config}
   alias CloudMonitoringExporter.Client.{ListMetricDescriptorsRequest, ListTimeSeriesRequest}
   alias Prometheus.Model
@@ -57,9 +59,10 @@ defmodule CloudMonitoringExporter.Collector do
   """
   @spec reject_descriptor?(map()) :: boolean()
   def reject_descriptor?(%{valueType: "DISTRIBUTION"}), do: true
-  def reject_descriptor?(%{metricKind: "GAUGE", valueType: "BOOL"}), do: true
-  def reject_descriptor?(%{metricKind: "GAUGE", valueType: "STRING"}), do: true
+  def reject_descriptor?(%{valueType: "BOOL"}), do: true
+  def reject_descriptor?(%{valueType: "STRING"}), do: true
   def reject_descriptor?(%{metricKind: "CUMULATIVE", valueType: "INT64"}), do: true
+  def reject_descriptor?(%{metricKind: "CUMULATIVE", valueType: "DOUBLE"}), do: true
   def reject_descriptor?(_), do: false
 
   def collect_metrics(_name, request) do
@@ -81,6 +84,10 @@ defmodule CloudMonitoringExporter.Collector do
           end)
           |> Stream.run()
       end
+    else
+      woops ->
+        Logger.info("Unable to list time series: #{inspect(woops)}")
+        []
     end
   end
 
