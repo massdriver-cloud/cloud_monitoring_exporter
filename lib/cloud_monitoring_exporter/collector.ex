@@ -66,27 +66,31 @@ defmodule CloudMonitoringExporter.Collector do
   def reject_descriptor?(_), do: false
 
   def collect_metrics(_name, request) do
-    with {:ok, response} <- Client.list_time_series(request) do
-      case response.timeSeries do
-        nil ->
-          []
+    case Client.list_time_series(request) do
+      {:ok, %{timeSeries: nil}} ->
+        []
 
-        list when is_list(list) ->
-          list
-          |> Task.async_stream(fn time_series ->
-            value_type = time_series.valueType
-            value = time_series.points |> List.first() |> Map.get(:value) |> get_value(value_type)
-            resource_labels = time_series.resource.labels |> Enum.into([])
-            namespace_label = {"Namespace", time_series.resource.type}
-            name_label = {"Name", time_series.metric.type}
-            labels = [namespace_label, name_label] ++ resource_labels
-            Model.gauge_metric(labels, value)
-          end)
-          |> Stream.run()
-      end
-    else
-      woops ->
-        Logger.info("Unable to list time series: #{inspect(woops)}")
+      {:ok, %{timeSeries: time_series}} ->
+        time_series
+        |> Task.async_stream(fn time_series ->
+          value_type = time_series.valueType
+
+          value = time_series.points |> List.first() |> Map.get(:value) |> get_value(value_type)
+
+          resource_labels = time_series.resource.labels |> Enum.into([])
+          namespace_label = {"Namespace", time_series.resource.type}
+          name_label = {"Name", time_series.metric.type}
+          labels = [namespace_label, name_label] ++ resource_labels
+          Model.gauge_metric(labels, value)
+        end)
+        |> Enum.map(fn {:ok, result} -> result end)
+
+      {:error, %Tesla.Env{status: status, body: body}} ->
+        Logger.info("Unable to list time series! Status: #{status}, body: #{inspect(body)}")
+        []
+
+      {:error, error} ->
+        Logger.info("Unexpected error listing time series: #{inspect(error)}")
         []
     end
   end
