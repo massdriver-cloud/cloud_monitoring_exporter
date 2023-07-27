@@ -80,8 +80,8 @@ defmodule CloudMonitoringExporter.Collector do
           resource_labels =
             time_series.resource.labels |> Enum.map(fn {k, v} -> {"dimension_" <> k, v} end)
 
-          namespace_label = {"Namespace", time_series.resource.type}
-          name_label = {"Name", time_series.metric.type}
+          namespace_label = {"metric_namespace", time_series.resource.type}
+          name_label = {"metric_name", time_series.metric.type}
           labels = [namespace_label, name_label] ++ resource_labels
           Model.gauge_metric(labels, value)
         end)
